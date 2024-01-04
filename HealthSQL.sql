@@ -1,5 +1,5 @@
 
--- 1. a.
+
 -- Loads the final_exam_rx into a new table called RX_new
 CREATE TABLE RX_NEW (
 	accountno varchar(30) primary key,
@@ -12,12 +12,10 @@ CREATE TABLE RX_NEW (
 BULK INSERT RX_NEW FROM 'C:\TEMP\final_exam_rx_spring.txt'
 WITH(FIELDTERMINATOR = '\t', ROWTERMINATOR = '\n')
 
--- 1. b.
 -- Runs a SELECT TOP 10 * against the newly created table
 SELECT TOP 10 * 
 FROM RX_NEW
 
--- 2. a.
 -- Returns DISTINCT drugs and dosage instructions
 SELECT DISTINCT drugname,
 	CASE
@@ -31,12 +29,10 @@ SELECT DISTINCT drugname,
 	END AS freq_per_day
 FROM RX_NEW
 
--- 2. b. 
 -- Adds a new column to the table called freq_per_day
 ALTER TABLE RX_NEW
 ADD freq_per_day int;
 
--- 2.c.
 -- Sets freq_per_day equal to the amount the drug needs to be take per day
 UPDATE RX_NEW
 SET freq_per_day = CASE 
@@ -50,7 +46,6 @@ SET freq_per_day = CASE
 END;
 SELECT * FROM RX_NEW
 
--- 2.d. 
 -- MME/day for each patients MME for ('OxyContin','Oxymorphone','Hydrocodone','Codeine')
 SELECT accountno, drugname, 
 	SUM(CASE 
@@ -64,7 +59,6 @@ FROM RX_NEW
 WHERE drugname IN ('OxyContin','Oxymorphone','Hydrocodone','Codeine')
 GROUP BY accountno, drugname;
 
--- 2.e.
 -- Sums MME by drugname
 ALTER TABLE RX_NEW
 ADD MME_per_day int
@@ -84,7 +78,6 @@ WHERE drugname IN ('OxyContin', 'Oxymorphone', 'Hydrocodone', 'Codeine')
 GROUP BY drugname;
 
 
--- 2.f.
 -- Total drug cost by drugname by admit_year in descending order
 SELECT R.drugname, A.ADMIT_YEAR, SUM(R.cost) AS total_drug_cost
 FROM RX_NEW R
@@ -93,13 +86,13 @@ ON R.accountno = A.MRN
 GROUP BY drugname, ADMIT_YEAR
 ORDER BY SUM(R.cost) DESC;
 
--- 2.g.
+
 -- Frequency distribution of patients taking drugs
 SELECT drugname, COUNT(accountno) AS patient_freq
 FROM RX_NEW
 GROUP BY drugname;
 
--- 2.h. 
+
 -- Patients on OxyContin that have a prior history of overdose
 SELECT R.accountno, R.drugname, S.P_OVERDOSE
 FROM RX_NEW R
